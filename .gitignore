@@ -1,0 +1,12 @@
+.env
+.cost_ledger.jsonl
+dist/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.terraform/
+*.tfstate
+*.tfstate.*
+.venv/
+venv/
+*.egg-info/

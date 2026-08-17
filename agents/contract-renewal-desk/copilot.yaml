@@ -1,0 +1,42 @@
+# Scaffolded by: pac copilot init --authoring-mode cli-copilot
+# This file's shape approximates the cli-copilot authoring-mode scaffold as of
+# the 17 Aug 2026 doc pass. Run `pac copilot init` yourself to regenerate the
+# exact current schema — this authoring mode is newer than classic and its
+# YAML is expected to move. Pin the pac version (see notebooks/00) and diff
+# against this file if `pac copilot pull` rewrites more than you changed.
+
+schemaName: crd_contract-renewal-desk
+displayName: Contract Renewal Desk
+description: >
+  Helps procurement and category managers track supplier contract renewals:
+  what's expiring, what the terms say, whether spend/performance supports a
+  routine renewal or an escalation, and drafts the resulting correspondence.
+
+# Harness is chosen here and cannot be changed after first publish (finding #1).
+# GHCP bills Copilot Credits from build time, not just runtime use — see
+# csx/cost.py and notebooks/00's credit budget cell before you touch this.
+harness: github-copilot   # GA 3 Aug 2026. Irreversible.
+
+publisher:
+  prefix: crd
+
+# Reasoning model for the agent itself. Per finding #6, Foundry-deployed
+# models cannot serve as this — Foundry reaches this agent only as a tool
+# (see notebooks/12). Per finding #4, this is fixed per agent; cost tiering
+# across tasks is done via connected agents (notebooks/20-22), each with its
+# own copilot.yaml pinning its own model here.
+model:
+  provider: microsoft
+  name: gpt-5-mini   # set explicitly in notebooks/01; do not leave implicit
+
+instructionsFile: instructions.md
+
+knowledge: []       # populated by notebooks/03-06, 14-15 — one entry per source
+skills: []          # populated by notebooks/07-08
+workflows: []       # populated by notebooks/09-11
+connectedAgents: [] # populated by notebooks/20-22
+mcpServers: []      # populated by notebooks/13
+
+# Filled in by notebooks/00 once the Dataverse environment exists; left blank
+# in source control so this file is environment-agnostic until push time.
+environment: null

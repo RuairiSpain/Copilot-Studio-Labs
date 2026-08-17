@@ -4,6 +4,7 @@ python-dotenv>=1.0
 msal>=1.28
 pyyaml>=6.0
 tiktoken>=0.7
+requests>=2.32
 
 # Copilot Studio invocation (verify path — see csx/clients.py)
 microsoft-agents-copilotstudio-client>=1.0

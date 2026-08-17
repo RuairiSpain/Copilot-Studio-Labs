@@ -104,3 +104,39 @@ def copilot_quarantine(agent_schema_name: str, environment_id: str, enable: bool
 
 def solution_import(solution_zip: Path, environment_url: str) -> None:
     _run(["solution", "import", "--path", str(solution_zip), "--environment", environment_url])
+
+
+def solution_unpack(solution_zip: Path, folder: Path) -> Path:
+    """`pac solution unpack` — cloud flows land under folder/modernflows/ as
+    per-flow JSON (classic workflows under folder/workflows/); that JSON is
+    the config-as-code surface Part 2's flow notebooks (29-31) diff and
+    review, same idea as unpacking a copilot.yaml, just a different CLI.
+    Idempotent in the sense that re-unpacking overwrites deterministically —
+    it's meant to be re-run every time the zip changes, not skipped."""
+    folder.mkdir(parents=True, exist_ok=True)
+    _run(["solution", "unpack", "--zipfile", str(solution_zip), "--folder", str(folder), "--allowWrite", "true"])
+    return folder
+
+
+def solution_pack(folder: Path, solution_zip: Path) -> Path:
+    solution_zip.parent.mkdir(parents=True, exist_ok=True)
+    _run(["solution", "pack", "--zipfile", str(solution_zip), "--folder", str(folder)])
+    return solution_zip
+
+
+def canvas_unpack(msapp_path: Path, sources_dir: Path) -> Path:
+    """`pac canvas unpack` — DEPRECATED. Power Platform Git Integration (GA)
+    is the supported path for canvas app source control now; this wrapper
+    exists for the CI-side scripted-diff use case Git Integration doesn't
+    cover (e.g. validating a synced .msapp before a solution build), not as
+    the primary authoring workflow. See notebooks/27's Concept section."""
+    sources_dir.mkdir(parents=True, exist_ok=True)
+    _run(["canvas", "unpack", "--msapp", str(msapp_path), "--sources", str(sources_dir)])
+    return sources_dir
+
+
+def canvas_pack(sources_dir: Path, msapp_path: Path) -> Path:
+    """`pac canvas pack` — DEPRECATED, see canvas_unpack's docstring."""
+    msapp_path.parent.mkdir(parents=True, exist_ok=True)
+    _run(["canvas", "pack", "--msapp", str(msapp_path), "--sources", str(sources_dir)])
+    return msapp_path

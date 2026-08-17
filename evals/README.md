@@ -34,6 +34,7 @@ field checks in `17`, tier-selection checks in `22`) pass their own
 | `fabric`, `fabric-iq`, `ontology`, `workiq`, `pii`, `webiq`, `injection` | `16`–`19` |
 | `multi-agent`, `model-tier`, `extraction`, `routing` | `20`–`22` |
 | `governance`, `dlp`, `secrets`, `content-safety` | `24` |
+| `app-integration` | `29`–`31` (Part 2, optional elective — flow-invoked and structured-writeback calls to the agent) |
 
 ## Growing the set
 

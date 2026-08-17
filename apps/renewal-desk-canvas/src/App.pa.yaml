@@ -1,0 +1,11 @@
+# Representative placeholder — see ../README.md "Source-of-truth note".
+# Once notebook 27 binds this environment to Git Integration, this file is
+# overwritten by the real sync on every designer save. Don't hand-edit it
+# expecting the designer to notice.
+App:
+  Properties:
+    StartScreen: =SupplierBrowse
+    Theme: =PowerAppsTheme
+  Screens:
+    - SupplierBrowse
+    - SupplierDetail

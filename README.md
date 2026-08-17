@@ -59,13 +59,14 @@ they explain design choices you'll otherwise find surprising.
 ```
 csx/          shared auth + clients + verify + cost + pac wrappers (notebooks stay thin)
 agents/       pac copilot workspaces — contract-renewal-desk is the spine
+apps/         canvas app workspace(s) — Part 2, optional elective (see below)
 skills/       canonical SKILL.md bundles (from T2-bonus onward)
 evals/        golden_cases.json — one shared set, every notebook, never duplicated
 infra/
   terraform/  platform layer: environments, DLP, managed-environment settings
   bicep/      Azure layer: AI Search, Storage, Foundry, App Insights, Key Vault
   pipelines/  GitHub Actions — build (no auth) / deploy (SP + eval gate) / platform (OIDC)
-notebooks/    00-25, plus T0-bonus … T9-bonus
+notebooks/    00-25, plus T0-bonus … T9-bonus (core), 26-31 + T10-bonus (Part 2, optional)
 Makefile      make verify | make golden | make plan | make apply | make teardown
 ```
 
@@ -103,6 +104,36 @@ pre-seeded SP connection) action, every time.
 | 8 — Governance | `24`, `T8-bonus` | DLP, quarantine, guard tests that fail when the guard is removed |
 | 9 — Production | `25`, `T9-bonus` | ALM, promotion gates, a deliberate bad deploy and its recovery |
 
+## Part 2 — Power Platform app development (optional elective)
+
+Notebooks `26`–`31` plus `T10-bonus`. **Nothing in `00`–`25` or
+`T0`–`T9-bonus` depends on this track** — it's for instructors who want to
+extend the workshop past "agent alone" into "agent embedded in a
+traditional Power Platform app," using the same spine scenario, the same
+Dataverse environment, and the same `crd_contract-renewal-desk` agent.
+
+| Notebook | Theme |
+|---|---|
+| `26` | Data modeling on Dataverse — the tables `09`–`17`'s workflows/MCP tools assumed existed, made real, plus two security roles |
+| `27` | Canvas app fundamentals — browse/detail screens, via Power Platform Git Integration |
+| `28` | Embedding the agent as a control — the actual "agent inside an app" lab |
+| `29` | Power Automate flow fundamentals — Dataverse-trigger and button-triggered flows |
+| `30` | Agent-as-a-flow-step — the automation-surface complement to `28`'s chat surface |
+| `31` | Capstone: app → flow → agent → Dataverse write-back → app reflects the change, security-role boundary proven end to end |
+| `T10-bonus` | Extends `T9-bonus`'s CI/CD pipeline to gate on the app + its flows, not just the agent |
+
+**Two findings from this track's own doc pass (checked 17 Aug 2026), because
+both invalidate the obvious first approach:**
+
+| # | Finding | Impact |
+|---|---|---|
+| P1 | `pac canvas pack`/`unpack` is **deprecated**. Power Platform **Git Integration (GA)** is the supported path for canvas app source control — bind an environment to a repo, and every designer save syncs unpacked YAML back automatically. | `27` uses Git Integration as the primary mechanism; `csx.pac.canvas_pack`/`canvas_unpack` are kept only for narrow CI-side scripted diffing, explicitly flagged deprecated in their docstrings. |
+| P2 | The native **"Add AI Copilot" canvas control was deprecated 2 Feb 2026** — it can no longer be added to a new canvas app. | `28` embeds the agent via the community **ChatControl PCF** (Bot Framework WebChat, imported as a solution) instead, and calls out Microsoft's longer-term direction (M365 Copilot in canvas apps, still preview) as something to re-check before teaching this notebook again. |
+
+Flows don't get their own authoring CLI either — `pac solution unpack`
+is the mechanism (`29`), the same idea as `agents/`'s YAML, applied to a
+solution's `Workflows`/cloud-flow JSON instead of a `copilot.yaml`.
+
 ## Sequencing note
 
 Tracks 5, 6, and 7 each depend on tenant-level admin switches a POC team
@@ -121,6 +152,12 @@ switch the full curriculum needs so you raise **one** ticket, not nine.
   authoring; its YAML schema is more likely to move than the rest of the
   CLI surface. `00` pins the exact `pac` version validated against this
   curriculum — bump it deliberately, not silently.
+- Part 2's `28` builds on the community **ChatControl PCF** sample, not a
+  first-party control — it's the correct current answer only because the
+  native control was deprecated 2 Feb 2026 and Microsoft's replacement
+  (M365 Copilot in canvas apps) is still preview. Re-verify before each
+  cohort; this is the single most likely thing in the whole repo to have
+  moved again by the time you teach it.
 
 ## Getting started
 
@@ -133,4 +170,6 @@ jupyter lab notebooks/00_environment_identity_credit_meter.ipynb
 
 Then work numerically, `00` → `25`, running each track's bonus notebook
 whenever you want the IaC-reproducible version of what the numbered
-notebook just did interactively.
+notebook just did interactively. Continue into `26` → `31` (+ `T10-bonus`)
+only if your cohort wants the Power Platform app-development elective —
+skip straight to wrap-up otherwise.

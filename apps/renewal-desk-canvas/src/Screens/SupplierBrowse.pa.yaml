@@ -1,0 +1,16 @@
+# Representative placeholder — built for real in notebook 27, synced by Git
+# Integration thereafter. See ../../README.md "Source-of-truth note".
+Screens:
+  SupplierBrowse:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+    Children:
+      - SupplierGallery:
+          Control: Gallery.Gallery
+          Properties:
+            Items: =Sort(crd_supplierrenewals, 'crd_ContractEndDate', SortOrder.Ascending)
+            TemplateSize: =120
+      - GalleryTitleLabel:
+          Control: Label.Label
+          Properties:
+            Text: ="Supplier Contract Renewals"

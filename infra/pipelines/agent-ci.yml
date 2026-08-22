@@ -1,0 +1,42 @@
+# Build stage — agent-as-code. `pac copilot pack` is purely local: no auth,
+# no environment (finding #8), so this job needs zero credentials. That's
+# the clean build/deploy separation reviewers ask about (see repo README
+# "IaC model"). Runs on every PR touching agents/contract-renewal-desk or
+# evals/, so a bad instructions.md edit fails before it ever reaches an
+# environment.
+
+name: agent-ci
+
+on:
+  pull_request:
+    paths:
+      - "agents/contract-renewal-desk/**"
+      - "evals/**"
+      - "csx/**"
+  push:
+    branches: [main]
+    paths:
+      - "agents/contract-renewal-desk/**"
+
+jobs:
+  pack-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pac CLI
+        run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+
+      - name: Validate golden set shape
+        run: python -c "import json; json.load(open('evals/golden_cases.json'))"
+
+      - name: pac copilot pack (no auth required)
+        run: |
+          pac copilot pack \
+            --inputDirectory agents/contract-renewal-desk \
+            --outputFile dist/crd.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: crd-solution
+          path: dist/crd.zip

@@ -1,0 +1,58 @@
+# Deploy stage — takes the artifact from agent-ci.yml, imports it with
+# SP/application auth (CI-safe path, csx/clients.py), then gates promotion
+# on the shared eval suite: `run_suite()` must pass min_pass_rate before the
+# solution is considered promotable. See T9-bonus and notebooks/25's
+# rollback drill for what happens when this gate is red.
+
+name: deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: "dev | test | prod"
+        required: true
+        default: "test"
+
+jobs:
+  deploy-and-gate:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.target_environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: crd-solution
+          path: dist
+
+      - name: Install pac CLI
+        run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+
+      - name: pac auth create (application / SP)
+        run: |
+          pac auth create \
+            --environment "${{ secrets.DATAVERSE_ENV_URL }}" \
+            --applicationId "${{ secrets.APP_CLIENT_ID }}" \
+            --clientSecret "${{ secrets.APP_CLIENT_SECRET }}" \
+            --tenant "${{ secrets.TENANT_ID }}"
+
+      - name: pac solution import
+        run: pac solution import --path dist/crd.zip --async false
+
+      - name: Install eval deps
+        run: pip install -r requirements.txt
+
+      - name: Run golden suite as the promotion gate
+        run: python -m csx.run_gate --tags core --min-pass-rate 0.8
+        env:
+          DATAVERSE_ENV_ID: ${{ secrets.DATAVERSE_ENV_ID }}
+          AGENT_SCHEMA_NAME: ${{ secrets.AGENT_SCHEMA_NAME }}
+          APP_CLIENT_ID: ${{ secrets.APP_CLIENT_ID }}
+          APP_CLIENT_SECRET: ${{ secrets.APP_CLIENT_SECRET }}
+          TENANT_ID: ${{ secrets.TENANT_ID }}
+
+      # If the gate step above fails, this job fails and the promotion
+      # stops here — notebooks/25 walks through the recovery: quarantine
+      # (csx.pac.copilot_quarantine) or roll back to the previous solution
+      # version, never "fix forward" silently in prod.

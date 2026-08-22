@@ -1,0 +1,23 @@
+# Representative placeholder — the form is built in notebook 27; the
+# ChatControl PCF block below is added in notebook 28. See
+# ../../README.md "Source-of-truth note".
+Screens:
+  SupplierDetail:
+    Properties:
+      Fill: =RGBA(250, 250, 250, 1)
+    Children:
+      - SupplierForm:
+          Control: Form.Form
+          Properties:
+            DataSource: =crd_supplierrenewals
+            Item: =SupplierGallery.Selected
+      # Added in notebook 28 — ChatControl PCF (Copilot Studio Samples repo),
+      # not the deprecated native "Add AI Copilot" control.
+      - AgentChat:
+          Control: mcs_ChatControl.ChatControl
+          Properties:
+            EnvironmentId: =EnvironmentId
+            AgentIdentifier: ="crd_contract-renewal-desk"
+            TenantId: =TenantId
+            ClientId: =DelegatedClientId
+            ContextVariables: '="{""supplierName"": """ & SupplierGallery.Selected.crd_SupplierName & """}"'

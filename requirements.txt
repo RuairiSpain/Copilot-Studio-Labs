@@ -1,0 +1,17 @@
+jupyter>=1.0
+nbformat>=5.10
+python-dotenv>=1.0
+msal>=1.28
+pyyaml>=6.0
+tiktoken>=0.7
+requests>=2.32
+
+# Copilot Studio invocation (verify path — see csx/clients.py)
+microsoft-agents-copilotstudio-client>=1.0
+
+# Azure / Foundry dependency notebooks (04, 12-15, 23)
+azure-identity>=1.17
+azure-storage-blob>=12.20
+azure-search-documents>=11.5
+azure-ai-projects>=1.0
+azure-monitor-query>=1.4
